@@ -18,7 +18,11 @@ for i in range(square_num):
         for j in range(square_num):
             crossedPoint.append([i*square_size,j*square_size])
 
+
 object = snake.Snake()
+subs = []
+for i in range(object.length):
+    subs.append(snake.Snake(object.currentPositionX(), object.currentPositionY()))
 
 clock = pygame.time.Clock()
 running = True
@@ -36,18 +40,25 @@ while running:
                 object.position[1]+square_size > snake.WINDOW_HEIGHT or 
                 object.position[0] < 0 or 
                 object.position[1] < 0):
-        object.direction = snake.death
+        object.direction = snake.death #移動方向を0,0(=無)に変更して停止 => ゲームオーバー
         font = pygame.font.Font(None, 55)
         gameover = True
         while gameover:
             screen.fill((0, 0, 0)) 
             text = font.render("Game Over", True, (255, 255, 255))
-            text_rect = text.get_rect(center=(snake.WINDOW_WIDTH//2, snake.WINDOW_HEIGHT//2))
+            text2 = font.render("Press R to RESTART", True, (255, 255, 255))
+            text_rect = text.get_rect(center=(snake.WINDOW_WIDTH//2, snake.WINDOW_HEIGHT//2 - font.get_linesize()))
+            text2_rect = text2.get_rect(center=(snake.WINDOW_WIDTH//2, snake.WINDOW_HEIGHT//2 + font.get_linesize()))
             screen.blit(text, text_rect)
+            screen.blit(text2,text2_rect)
             for event in pygame.event.get():
                     if event.type == pygame.QUIT:  # ウィンドウの×ボタンで終了
                         gameover = False
                         running = False
+                    elif event.type == pygame.KEYDOWN: #Rキーでゲームリセットのつもり
+                        if event.key == pygame.K_r:
+                            gameover = False
+                            object.RESET()  #キューブの状態初期化
             pygame.display.flip()  # 画面更新
             clock.tick(60) # FPS
     pygame.draw.rect(screen, (255,255,255), (object.position[0],object.position[1],square_size,square_size)) #(positionX,positionY,width,height)
